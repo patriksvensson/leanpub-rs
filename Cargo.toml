@@ -1,6 +1,6 @@
 [package]
 name = "leanpub"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Patrik Svensson <patrik@patriksvensson.se>"]
 description = "Unofficial Leanpub API client."
 license = "MIT"

@@ -5,11 +5,11 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
-mod errors;
-mod response;
+mod utils;
+mod responses;
 
-use errors::LeanpubResult;
-pub use response::Summary;
+use utils::LeanpubResult;
+pub use responses::Summary;
 
 /// The Leanpub API client.
 pub struct Client {

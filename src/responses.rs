@@ -74,10 +74,10 @@ fn de_empty_str_to_optional_str<'de, D>(deserializer: D) -> Result<Option<String
     where D: Deserializer<'de>
 {
     let s = String::deserialize(deserializer)?;
-    if s == "" {
-        return Ok(Option::None);
-    }
-    return Ok(Option::Some(s));
+    return match &s[..] {
+        "" => Ok(Option::None),
+        _ => Ok(Option::Some(s)) 
+    };
 }
 
 fn de_nullable_int_to_u32<'de, D>(deserializer: D) -> Result<u32, D::Error>

@@ -12,7 +12,6 @@ pub use responses::Summary;
 
 /// The Leanpub API client.
 pub struct Client {
-    slug: String,
     api_key: Option<String>,
 }
 
@@ -21,13 +20,9 @@ impl Client {
     /// The API key is optional but required when 
     /// interacting with API endpoints that requires
     /// an authenticated user.
-    pub fn new<T: Into<String>>(slug: T, api_key: Option<T>) -> Self {
-        return Client { 
-            slug: slug.into(), 
-            api_key: match api_key {
-                Some(n) => Some(n.into()),
-                None => None
-            } 
+    pub fn new(api_key: Option<String>) -> Self {
+        return Client {  
+            api_key
         };
     }
 
@@ -40,8 +35,8 @@ impl Client {
     /// total copies sold and revenue for the book, as well as the URLs for 
     /// downloading the current preview and published version of your book 
     /// in epub, pdf and mobi formats.
-    pub fn get_summary(&self) -> LeanpubResult<Summary> {
-        let uri = self.append_api_key(format!("https://leanpub.com/{}.json", self.slug));
+    pub fn get_summary(&self, slug: &str) -> LeanpubResult<Summary> {
+        let uri = self.append_api_key(format!("https://leanpub.com/{}.json", slug));
         let response = utils::http::get(&uri[..])?;
         return Ok(serde_json::from_str::<Summary>(&response)?);
     }

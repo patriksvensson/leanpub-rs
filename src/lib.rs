@@ -1,5 +1,4 @@
 extern crate failure;
-extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
 #[macro_use]
@@ -8,7 +7,7 @@ extern crate serde_derive;
 mod utils;
 mod responses;
 
-use utils::LeanpubResult;
+use utils::errors::{LeanpubResult};
 pub use responses::Summary;
 
 /// The Leanpub API client.
@@ -43,7 +42,7 @@ impl Client {
     /// in epub, pdf and mobi formats.
     pub fn get_summary(&self) -> LeanpubResult<Summary> {
         let uri = self.append_api_key(format!("https://leanpub.com/{}.json", self.slug));
-        let response = reqwest::get(&uri[..])?.text()?;
+        let response = utils::http::get(&uri[..])?;
         return Ok(serde_json::from_str::<Summary>(&response)?);
     }
 

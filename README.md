@@ -2,6 +2,9 @@
 
 An (unofficial) Leanpub API client. 
 
+[Crate](https://crates.io/crates/leanpub/0.1.3)  
+[Documentation](https://docs.rs/leanpub/0.1.3/leanpub/)
+
 ## Usage
 
 Add a dependency to the `leanpub` crate.

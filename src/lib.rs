@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate failure;
 extern crate serde;
 extern crate serde_json;
@@ -5,7 +6,10 @@ extern crate serde_json;
 extern crate serde_derive;
 
 mod responses;
+#[macro_use]
 mod utils;
+
+use std::path::Path;
 
 pub use responses::Summary;
 use utils::errors::LeanpubResult;
@@ -17,15 +21,28 @@ pub struct Client {
     api_key: Option<String>,
 }
 
+/// Represents the different preview formats.
+pub enum PreviewFormat {
+    /// PDF format.
+    Pdf,
+    /// Epub format.
+    Epub,
+    /// Mobi format.
+    Mobi,
+}
+
 impl Client {
     /// Creates a new client for a specific slug.
     /// The API key is optional but required when
     /// interacting with API endpoints that requires
     /// an authenticated user.
-    pub fn new(api_key: Option<String>) -> Self {
+    pub fn new(api_key: Option<&str>) -> Self {
         return Client {
             client: Box::new(DefaultHttpClient {}),
-            api_key,
+            api_key: match api_key {
+                Some(key) => Option::Some(key.to_string()),
+                None => None,
+            },
         };
     }
 
@@ -44,6 +61,31 @@ impl Client {
         return Ok(serde_json::from_str::<Summary>(&response)?);
     }
 
+    /// Downloads the latest preview in the specified format.
+    pub fn download_preview(
+        &self,
+        slug: &str,
+        file_path: &Path,
+        format: PreviewFormat,
+    ) -> LeanpubResult<()> {
+        let result = self.get_summary(slug)?;
+
+        let url = match format {
+            PreviewFormat::Pdf => result.pdf_preview_url,
+            PreviewFormat::Epub => result.epub_preview_url,
+            PreviewFormat::Mobi => result.mobi_preview_url,
+        };
+
+        match url {
+            Some(url) => {
+                // Download the file.
+                self.client.download(&url.as_str(), file_path)?;
+                return Ok(());
+            }
+            None => return Err(format_err!("No preview available.")),
+        }
+    }
+
     fn append_api_key(&self, url: String) -> String {
         return match &self.api_key {
             Some(key) => format!("{}?api_key={}", url, key),
@@ -53,33 +95,18 @@ impl Client {
 }
 
 #[cfg(test)]
-mod tests
-{
+mod tests {
     use super::*;
-    use utils::http::HttpClient;
-    use utils::errors::LeanpubResult;
-
-    pub struct FakeHttpClient { 
-        content: String
-    }
-    impl HttpClient for FakeHttpClient {
-        fn get(&self, _uri: &str) -> LeanpubResult<String> {
-            return Ok(self.content.clone());
-        }
-    }
 
     #[test]
-    fn lol() {
+    fn should_parse_authenticated_summary_response_correctly() {
         // Given
-        let client = Client {
-            api_key: None,
-            client: Box::new(FakeHttpClient {
-                content: include_str!("res/authenticated.json").to_string(),
-            })
-        };
-        
+        let client = create_fake_client!(
+            Option::Some("api-key".to_string()),
+            include_str!("res/authenticated.json"));
+
         // When
-        let result = client.get_summary("lol").unwrap();
+        let result = client.get_summary("qux").unwrap();
 
         // Then
         assert_eq!(321, result.id);

@@ -1,7 +1,7 @@
 extern crate leanpub;
 
 fn main() {
-    let client = leanpub::Client::new(Option::None);
+    let client = leanpub::Client::new(None);
     let result = client.get_summary("rprogramming").unwrap();
 
     println!("Title: {}", result.title);

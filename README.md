@@ -20,12 +20,19 @@ the crate in your application or library.
 ```rust
 extern crate leanpub;
 
+use std::path::Path;
+
 fn main() {
-    let client = leanpub::Client::new(Option::None);
-    let result = client.get_summary("rprogramming").unwrap();
+    let client = leanpub::Client::new(Option::Some("secret-api-key"));
+    let result = client.get_summary("my-book").unwrap();
 
     println!("Title: {}", result.title);
     println!("Minimum price: {}", result.minimum_price);
     println!("Suggested price: {}", result.suggested_price);
+
+    client.download_preview(
+        "my-book",
+        Path::new("./my_book.pdf"), 
+        leanpub::PreviewFormat::Pdf).unwrap();
 }
 ```

@@ -2,8 +2,8 @@
 
 An (unofficial) Leanpub API client. 
 
-[Crate](https://crates.io/crates/leanpub/0.1.3)  
-[Documentation](https://docs.rs/leanpub/0.1.3/leanpub/)
+[Crate](https://crates.io/crates/leanpub/0.1.4)  
+[Documentation](https://docs.rs/leanpub/0.1.4/leanpub/)
 
 ## Usage
 
@@ -11,7 +11,7 @@ Add a dependency to the `leanpub` crate.
 
 ```toml
 [dependencies]
-leanpub = "0.1.3"
+leanpub = "0.1.4"
 ```
 
 Now you should be able to use it after you've imported
